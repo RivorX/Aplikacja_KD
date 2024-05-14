@@ -18,18 +18,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hasło jest poprawne, ustawienie sesji
             $_SESSION['user_id'] = $row['Pracownicy_id'];
             $_SESSION['email'] = $row['email'];
-            header("Location: /Frontend/userpanel.php");
+            header("Location: ../Frontend/userpanel.php");
             exit();
         } else {
             // Niepoprawne hasło
             $_SESSION['error'] = "Nieprawidłowe dane logowania. Złe hasło.";
-            header("Location: /Frontend/login.php");
+            header("Location: ../Frontend/login.php");
             exit();
         }
     } else {
         // Niepoprawny email
         $_SESSION['error'] = "Nieprawidłowe dane logowania.";
-        header("Location: /Frontend/login.php");
+        header("Location: ../Frontend/login.php");
         exit();
     }
 

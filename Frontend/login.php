@@ -61,7 +61,7 @@
             unset($_SESSION['error']);
         }
         ?>
-        <form action="/Backend/loginBACK.php" method="POST">
+        <form action="../Backend/loginBACK.php" method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Hasło" required>
             <button type="submit">Zaloguj się</button>
