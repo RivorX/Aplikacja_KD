@@ -16,7 +16,7 @@
     </header>
     <nav>
         <a href="#" class="nav-link active" data-section="main">Panel główny</a>
-        <a href="#" class="nav-link" data-section="announcements">Ogłoszenia</a>
+        <a href="#" class="nav-link" data-section="history">Historia</a>
         <a href="#" class="nav-link" data-section="info">Informacje</a>
     </nav>
     <div class="content" id="content">
@@ -37,11 +37,15 @@
             main: `
                 <h1>Twoje karty dostępu</h1>
                 <div class="qr-container">
-                    <button id="scan-qr-button" class="login-button" type="button">Skanuj</button>
-                    <button id="cancel-scan-button" class="login-button" type="button" style="display: none;">Anuluj skanowanie</button>
-                    <button id="change-camera-button" class="login-button" type="button" style="display: none;">Zmień kamerę</button>
+                    <div class="button-container">
+                        <button id="scan-qr-button" class="login-button" type="button">Skanuj</button>
+                        <button id="cancel-scan-button" class="login-button" type="button" style="display: none;">Anuluj skanowanie</button>
+                        <button id="change-camera-button" class="login-button" type="button" style="display: none;">Zmień kamerę</button>
+                    </div>
                     <div id="qr-reader"></div>
                 </div>
+
+
                 <div class="table-container">
                     <table id="cards-table">
                         <thead>
@@ -61,9 +65,9 @@
                     </table>
                 </div>
             `,
-            announcements: `
-                <h1>Ogłoszenia</h1>
-                <p>Tu znajdziesz najnowsze ogłoszenia.</p>
+            history: `
+                <h1>Historia wejść</h1>
+                <p>Tu znajdziesz najnowszą historię.</p>
             `,
             info: `
                 <h1>Informacje</h1>
