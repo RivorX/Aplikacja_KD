@@ -79,7 +79,7 @@
             const tableBody = document.querySelector('#cards-table tbody');
             tableBody.innerHTML = '<tr><td colspan="5">Ładowanie...</td></tr>';
 
-            fetch('../Backend/get_cards.php')
+            fetch('../Backend/get_cards_user.php')
                 .then(response => response.json())
                 .then(data => {
                     tableBody.innerHTML = '';
@@ -127,9 +127,7 @@
         const cancelButton = document.getElementById('cancel-scan-button');
         const changeCameraButton = document.getElementById('change-camera-button');
         const qrReader = document.getElementById('qr-reader');
-
         let qrCodeScanner = null;
-
         scanButton.addEventListener('click', function() {
             if (!qrCodeScanner) {
                 setupQrScanner();
@@ -149,9 +147,6 @@
             );
             scanButton.disabled = true; // Wyłącza przycisk skanowania podczas skanowania
         });
-
-
-
         function setupQrScanner() {
             qrCodeScanner = new Html5QrcodeScanner(
                 'qr-reader', 

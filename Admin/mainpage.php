@@ -29,13 +29,15 @@
                 <tr>
                     <th>Imię</th>
                     <th>Nazwisko</th>
-                    <th>Stanowisko</th>
-                    <th>Dział</th>
+                    <th>email</th>
+                    <th>Grupa</th>
+                    <th>Status</th>
+                    <th>Akcje</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="4">Ładowanie...</td>
+                    <td colspan="6">Ładowanie...</td>
                 </tr>
             </tbody>
         </table>
@@ -59,13 +61,15 @@
                             <tr>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
-                                <th>Stanowisko</th>
-                                <th>Dział</th>
+                                <th>email</th>
+                                <th>Grupa</th>
+                                <th>Status</th>
+                                <th>Akcje</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="4">Ładowanie...</td>
+                                <td colspan="6">Ładowanie...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +87,7 @@
                             <th>Data ważności</th>
                             <th>Strefy dostępu</th>
                             <th>Status</th>
-                            <th>Akcje</th> <!-- Nowa kolumna na akcje -->
+                            <th>Akcje</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -122,7 +126,35 @@
             const tableBody = document.querySelector('#employees-table tbody');
             tableBody.innerHTML = '<tr><td colspan="4">Ładowanie...</td></tr>';
 
-            // Tutaj można dodać kod do pobrania danych pracowników z bazy danych
+            fetch('../Backend/get_employees.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = '';
+                        if (data.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="6">Brak Pracowników</td></tr>';
+                        } else {
+                            data.forEach(employees => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${employees.imie}</td>
+                                    <td>${employees.nazwisko}</td>
+                                    <td>${employees.email}</td>
+                                    <td>${employees.nazwa_grupy}</td>
+                                    <td class="${employees.konto_aktywne == 1 ? 'status-active' : 'status-noactive'}">${employees.konto_aktywne == 1 ? 'Aktywny' : 'Nieaktywny'}</td>
+                                    <td>
+                                        <button onclick="editemployees(${employees.pracownicy_id})">Edytuj</button>
+                                        <button onclick="deleteemployees(${employees.pracownicy_id})">Usuń</button>
+                                        <button onclick="toggleemployeesStatus(${employees.pracownicy_id})">${employees.konto_aktywne === 0 ? 'Zablokuj' : 'Odblokuj'}</button>
+                                    </td>
+                                `;
+                                tableBody.appendChild(row);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching employees:', error);
+                        tableBody.innerHTML = '<tr><td colspan="4">Błąd podczas ładowania danych</td></tr>'; <!-- Zmiana na 6 kolumn -->
+                    });
         }
         function loadCardsTableData() {
                 const tableBody = document.querySelector('#cards-table tbody');
@@ -142,11 +174,11 @@
                                     <td>${card.data_wydania}</td>
                                     <td>${card.data_waznosci}</td>
                                     <td>${card.strefy_dostepu}</td>
-                                    <td class="${card.karta_aktywna === 'Aktywna' ? 'status-active' : 'status-noactive'}">${card.karta_aktywna === 0 ? 'Aktywna' : 'Nieaktywna'}</td>
+                                    <td class="${card.karta_aktywna == 1 ? 'status-active' : 'status-noactive'}">${card.karta_aktywna === 1 ? 'Aktywna' : 'Nieaktywna'}</td>
                                     <td>
-                                        <button onclick="editCard(${card.id})">Edytuj</button>
-                                        <button onclick="deleteCard(${card.id})">Usuń</button>
-                                        <button onclick="toggleCardStatus(${card.id})">${card.karta_aktywna === 0 ? 'Zablokuj' : 'Odblokuj'}</button>
+                                        <button onclick="editCard(${card.karta_dostepu_id})">Edytuj</button>
+                                        <button onclick="deleteCard(${card.karta_dostepu_id})">Usuń</button>
+                                        <button onclick="toggleCardStatus(${card.karta_dostepu_id})">${card.karta_aktywna === 0 ? 'Zablokuj' : 'Odblokuj'}</button>
                                     </td>
                                 `;
                                 tableBody.appendChild(row);
@@ -173,7 +205,7 @@
         });
 
         // Initial load of employees data
-        loadEmployeesData();
+        loadEmployeesTableData();
     });
 </script>
 </body>
