@@ -4,96 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Użytkownika</title>
-
-    <!-- Style -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        header {
-            background-color: #f8f9fa;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .admin-panel-link {
-            color: red;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info img {
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-        .user-info div {
-            text-align: left;
-        }
-        nav {
-            background-color: #d1d5db;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-        }
-        nav a {
-            color: #4b5563;
-            text-decoration: none;
-            margin: 0 15px;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-        nav a.active, nav a:hover {
-            background-color: #6b7280;
-            color: white;
-        }
-        .content {
-            padding: 20px;
-        }
-        .content h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .table-container {
-            margin-top: 20px;
-        }
-        .table-container table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table-container th, .table-container td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .table-container th {
-            background-color: #f8f9fa;
-        }
-        .status-active {
-            color: green;
-            font-weight: bold;
-        }
-        footer {
-            background-color: #6b7280;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-        }
-        #qr-reader {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            border: 2px solid #000;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
@@ -110,136 +21,166 @@
     </nav>
     <div class="content" id="content">
         <!-- Domyślna zawartość sekcji Panel główny -->
-        <h1>Twoje karty dostępu</h1>
-        <button id="scan-qr-button" type="button">Skanuj</button>
-        <div id="qr-reader"></div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nr karty</th>
-                        <th>Data wydania</th>
-                        <th>Data ważności</th>
-                        <th>Strefy dostępu</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>23432424</td>
-                        <td>2024-05-04</td>
-                        <td>2024-05-04</td>
-                        <td>Brak</td>
-                        <td class="status-active">Aktywna</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
     <footer>
         E-firma
     </footer>
 
     <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const contentElement = document.getElementById('content');
-            const navLinks = document.querySelectorAll('.nav-link');
+    document.addEventListener('DOMContentLoaded', function() {
+        const contentElement = document.getElementById('content');
+        const navLinks = document.querySelectorAll('.nav-link');
 
-            const sections = {
-                main: `
-                    <h1>Twoje karty dostępu</h1>
-                    <button type="button">Skanuj</button>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nr karty</th>
-                                    <th>Data wydania</th>
-                                    <th>Data ważności</th>
-                                    <th>Strefy dostępu</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>23432424</td>
-                                    <td>2024-05-04</td>
-                                    <td>2024-05-04</td>
-                                    <td>Brak</td>
-                                    <td class="status-active">Aktywna</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                `,
-                announcements: `
-                    <h1>Ogłoszenia</h1>
-                    <p>Tu znajdziesz najnowsze ogłoszenia.</p>
-                `,
-                info: `
-                    <h1>Informacje</h1>
-                    <p>Tu znajdziesz informacje o użytkowniku.</p>
-                `
-            };
+        const sections = {
+            main: `
+                <h1>Twoje karty dostępu</h1>
+                <div class="qr-container">
+                    <button id="scan-qr-button" class="login-button" type="button">Skanuj</button>
+                    <button id="cancel-scan-button" class="login-button" type="button" style="display: none;">Anuluj skanowanie</button>
+                    <button id="change-camera-button" class="login-button" type="button" style="display: none;">Zmień kamerę</button>
+                    <div id="qr-reader"></div>
+                </div>
+                <div class="table-container">
+                    <table id="cards-table">
+                        <thead>
+                            <tr>
+                                <th>Nr karty</th>
+                                <th>Data wydania</th>
+                                <th>Data ważności</th>
+                                <th>Strefy dostępu</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5">Ładowanie...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            announcements: `
+                <h1>Ogłoszenia</h1>
+                <p>Tu znajdziesz najnowsze ogłoszenia.</p>
+            `,
+            info: `
+                <h1>Informacje</h1>
+                <p>Tu znajdziesz informacje o użytkowniku.</p>
+            `
+        };
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
+        function loadTableData() {
+            const tableBody = document.querySelector('#cards-table tbody');
+            tableBody.innerHTML = '<tr><td colspan="5">Ładowanie...</td></tr>';
 
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const section = this.getAttribute('data-section');
-                    contentElement.innerHTML = sections[section];
-                });
-            });
-
-            // Obsługa przycisku skanowania QR
-            const scanButton = document.getElementById('scan-qr-button');
-            scanButton.addEventListener('click', function() {
-                const qrReader = document.getElementById('qr-reader');
-
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: qrReader,
-                        constraints: {
-                            width: 500,
-                            height: 300,
-                            facingMode: "environment"
-                        },
-                    },
-                    decoder: {
-                        readers: ["code_128_reader"]
-                    },
-                }, function(err) {
-                    if (err) {
-                        console.error(err);
-                        return;
+            fetch('../Backend/get_cards.php')
+                .then(response => response.json())
+                .then(data => {
+                    tableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5">Brak kart</td></tr>';
+                    } else {
+                        data.forEach(card => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${card.numer_seryjny}</td>
+                                <td>${card.data_wydania}</td>
+                                <td>${card.data_waznosci}</td>
+                                <td>${card.strefy_dostepu}</td>
+                                <td class="${card.karta_aktywna === 'Aktywna' ? 'status-active' : 'status-noactive'}">${card.karta_aktywna === 0 ? 'Aktywna' : 'Nieaktywna'}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
                     }
-                    console.log("Initialization finished. Ready to start");
-                    Quagga.start();
+                })
+                .catch(error => {
+                    console.error('Error fetching cards:', error);
+                    tableBody.innerHTML = '<tr><td colspan="5">Błąd podczas ładowania danych</td></tr>';
                 });
+        }
 
-                const cancelButton = document.createElement('button');
-                cancelButton.textContent = 'Anuluj skanowanie';
-                cancelButton.addEventListener('click', function() {
-                    Quagga.stop();
-                    qrReader.innerHTML = '';
-                });
-                qrReader.appendChild(cancelButton);
+        // Load main section by default
+        contentElement.innerHTML = sections['main'];
+        loadTableData();
 
-                Quagga.onDetected(function(result) {
-                    console.log("Detected:", result);
-                    alert("Zeskanowany kod: " + result.codeResult.code);
-                    Quagga.stop();
-                    qrReader.innerHTML = '';
-                });
+        // Event listeners for navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const section = this.getAttribute('data-section');
+                contentElement.innerHTML = sections[section];
+                if (section === 'main') {
+                    loadTableData();
+                }
             });
         });
+
+        const scanButton = document.getElementById('scan-qr-button');
+        const cancelButton = document.getElementById('cancel-scan-button');
+        const changeCameraButton = document.getElementById('change-camera-button');
+        const qrReader = document.getElementById('qr-reader');
+
+        let qrCodeScanner = null;
+
+        scanButton.addEventListener('click', function() {
+            if (!qrCodeScanner) {
+                setupQrScanner();
+            }
+            qrCodeScanner.render(
+                (result) => {
+                    alert("Zeskanowany kod: " + result);
+                    qrCodeScanner.clear(); // Zatrzymuje skanowanie
+                    cancelButton.style.display = 'none';
+                    changeCameraButton.style.display = 'none';
+                    scanButton.disabled = false; // Włącza przycisk skanowania po pomyślnym zeskanowaniu
+                },
+                (error) => {
+                    console.error(error);
+                    scanButton.disabled = false; // Włącza przycisk skanowania w przypadku błędu
+                }
+            );
+            scanButton.disabled = true; // Wyłącza przycisk skanowania podczas skanowania
+        });
+
+
+
+        function setupQrScanner() {
+            qrCodeScanner = new Html5QrcodeScanner(
+                'qr-reader', 
+                { fps: 10, qrbox: 250 }, 
+                (result) => {
+                    alert("Zeskanowany kod: " + result);
+                    qrCodeScanner.stop();
+                    cancelButton.style.display = 'none';
+                    changeCameraButton.style.display = 'none';
+                    scanButton.disabled = false; // Re-enable scan button after successful scan
+                },
+                (error) => {
+                    console.error(error);
+                    scanButton.disabled = false; // Re-enable scan button if there's an error
+                }
+            );
+
+            cancelButton.style.display = 'block';
+            changeCameraButton.style.display = 'block';
+
+            cancelButton.addEventListener('click', function() {
+                qrCodeScanner.clear();
+                qrReader.innerHTML = '';
+                cancelButton.style.display = 'none';
+                changeCameraButton.style.display = 'none';
+                scanButton.disabled = false; // Re-enable scan button after cancelling
+            });
+
+            changeCameraButton.addEventListener('click', function() {
+                qrCodeScanner.changeCamera();
+            });
+        }
+    });
     </script>
 </body>
 </html>
