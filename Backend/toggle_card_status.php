@@ -3,7 +3,7 @@ require '../config.php';
 
 $id = $_GET['id'];
 
-$sql = "UPDATE karty_dostepu SET karta_aktywna = NOT karta_aktywna WHERE karta_dostepu_id = ?";
+$sql = "UPDATE karta_dostepu SET karta_aktywna = NOT karta_aktywna WHERE karta_dostepu_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 

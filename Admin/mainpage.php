@@ -52,6 +52,7 @@
 <!-- JavaScript -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        
         const contentElement = document.getElementById('content');
         const sections = {
             employees: `
@@ -107,8 +108,37 @@
                         <input type="date" id="issueDate" name="issueDate" required>
                         <label for="expiryDate">Data ważności:</label>
                         <input type="date" id="expiryDate" name="expiryDate" required>
+                        <label for="employee">Pracownik:</label>
+                        <select id="employee" name="employee" required>
+                            <?php
+                            require '../config.php';
+                            $sql = "SELECT Pracownicy_id, imie, nazwisko FROM pracownicy";
+                            $result = $conn->query($sql);
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='" . $row["Pracownicy_id"] . "'>" . $row["imie"] . " " . $row["nazwisko"] . "</option>";
+                                }
+                            } else {
+                                echo "<option value=''>Brak pracowników</option>";
+                            }
+                            ?>
+                        </select>
+
                         <label for="accessZones">Strefy dostępu:</label>
-                        <input type="text" id="accessZones" name="accessZones" required>
+                        <select id="accessZones" name="accessZones[]" multiple required>
+                            <?php
+                            require '../config.php';
+                            $sql = "SELECT Strefy_Dostepu_id, nazwa_strefy FROM strefy_dostepu";
+                            $result = $conn->query($sql);
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='" . $row["Strefy_Dostepu_id"] . "'>" . $row["nazwa_strefy"] . "</option>";
+                                }
+                            } else {
+                                echo "<option value=''>Brak dostępnych stref</option>";
+                            }
+                            ?>
+                        </select>
                         <label for="status">Status:</label>
                         <select id="status" name="status">
                             <option value="1">Aktywna</option>
@@ -119,6 +149,7 @@
                         <button type="button" id="cancelButton">Anuluj</button>
                     </form>
                 </div>
+
             `,
             zones: `
                 <h1>Strefy dostępu</h1>

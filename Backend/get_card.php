@@ -2,7 +2,7 @@
 require '../config.php';
 
 $id = $_GET['id'];
-$sql = "SELECT * FROM karty_dostepu WHERE karta_dostepu_id = ?";
+$sql = "SELECT * FROM karta_dostepu WHERE karta_dostepu_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();

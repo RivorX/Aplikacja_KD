@@ -13,8 +13,9 @@ $sql = "SELECT
         karta_dostepu kd
     LEFT JOIN 
         karta_dostepu_has_strefy_dostepu kdh ON kd.karta_dostepu_id = kdh.karta_dostepu_id
-    JOIN 
-        strefy_dostepu sd ON sd.Strefy_Dostepu_id = kdh.Strefy_Dostepu_id";
+    LEFT JOIN 
+        strefy_dostepu sd ON sd.Strefy_Dostepu_id = kdh.Strefy_Dostepu_id
+	GROUP BY karta_dostepu_id;";
 
 // Przygotowanie zapytania SQL z instrukcją prepare
 $stmt = $conn->prepare($sql);
