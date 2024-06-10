@@ -44,8 +44,6 @@
                     </div>
                     <div id="qr-reader"></div>
                 </div>
-
-
                 <div class="table-container">
                     <table id="cards-table">
                         <thead>
@@ -93,7 +91,7 @@
                                 <td>${card.data_wydania}</td>
                                 <td>${card.data_waznosci}</td>
                                 <td>${card.strefy_dostepu}</td>
-                                <td class="${card.karta_aktywna === 'Aktywna' ? 'status-active' : 'status-noactive'}">${card.karta_aktywna === 0 ? 'Aktywna' : 'Nieaktywna'}</td>
+                                <td class="${card.karta_aktywna == 1 ? 'status-active' : 'status-noactive'}">${card.karta_aktywna == 1 ? 'Aktywna' : 'Nieaktywna'}</td>
                             `;
                             tableBody.appendChild(row);
                         });
@@ -126,60 +124,67 @@
         const scanButton = document.getElementById('scan-qr-button');
         const cancelButton = document.getElementById('cancel-scan-button');
         const changeCameraButton = document.getElementById('change-camera-button');
-        const qrReader = document.getElementById('qr-reader');
-        let qrCodeScanner = null;
+        let html5QrcodeScanner = null;
+
         scanButton.addEventListener('click', function() {
-            if (!qrCodeScanner) {
+            if (!html5QrcodeScanner) {
+                html5QrcodeScanner = new Html5QrcodeScanner(
+                    'qr-reader', 
+                    { fps: 10, qrbox: 250 }
+                );
                 setupQrScanner();
             }
-            qrCodeScanner.render(
-                (result) => {
-                    alert("Zeskanowany kod: " + result);
-                    qrCodeScanner.clear(); // Zatrzymuje skanowanie
-                    cancelButton.style.display = 'none';
-                    changeCameraButton.style.display = 'none';
-                    scanButton.disabled = false; // Włącza przycisk skanowania po pomyślnym zeskanowaniu
-                },
-                (error) => {
-                    console.error(error);
-                    scanButton.disabled = false; // Włącza przycisk skanowania w przypadku błędu
-                }
-            );
-            scanButton.disabled = true; // Wyłącza przycisk skanowania podczas skanowania
+            html5QrcodeScanner.render(onScanSuccess);
+            scanButton.disabled = true; // Disable scan button while scanning
         });
-        function setupQrScanner() {
-            qrCodeScanner = new Html5QrcodeScanner(
-                'qr-reader', 
-                { fps: 10, qrbox: 250 }, 
-                (result) => {
-                    alert("Zeskanowany kod: " + result);
-                    qrCodeScanner.stop();
-                    cancelButton.style.display = 'none';
-                    changeCameraButton.style.display = 'none';
-                    scanButton.disabled = false; // Re-enable scan button after successful scan
-                },
-                (error) => {
-                    console.error(error);
-                    scanButton.disabled = false; // Re-enable scan button if there's an error
-                }
-            );
 
+        async function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Scan result: ${decodedText}`, decodedResult);
+
+            try {
+                const response = await fetch('../Backend/get_dostep_po_QR.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ qr_code: decodedText }) // Klucz musi być 'qr_code'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                if (data.access_granted) {
+                    alert('Dostęp przyznany');
+                } else {
+                    alert('Dostęp nieprzyznany');
+                }
+            } catch (error) {
+                console.error('Error processing QR code:', error);
+                alert('Wystąpił błąd podczas przetwarzania kodu QR. Sprawdź konsolę deweloperską dla więcej informacji.');
+            }
+        }
+
+        function setupQrScanner() {
             cancelButton.style.display = 'block';
             changeCameraButton.style.display = 'block';
 
             cancelButton.addEventListener('click', function() {
-                qrCodeScanner.clear();
-                qrReader.innerHTML = '';
+                html5QrcodeScanner.clear(); // Clear the QR scanner
                 cancelButton.style.display = 'none';
                 changeCameraButton.style.display = 'none';
                 scanButton.disabled = false; // Re-enable scan button after cancelling
             });
 
             changeCameraButton.addEventListener('click', function() {
-                qrCodeScanner.changeCamera();
+                html5QrcodeScanner.changeCamera(); // Change camera if available
             });
         }
+
     });
+
     </script>
+
 </body>
 </html>

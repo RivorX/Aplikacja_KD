@@ -1,0 +1,14 @@
+W PHP.ini
+
+zmień:
+;extension=gd    -> extension=gd
+
+
+
+
+
+
+
+QR CODE generator api
+https://sourceforge.net/projects/phpqrcode/
+
